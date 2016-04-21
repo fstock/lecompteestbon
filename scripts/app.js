@@ -16,13 +16,17 @@ var app = (function($, game) {
         drawPlaques = function() {
             var
                 map = game.map,
-                item = [];
+                plaques = [];
 
+            $("#plaques").empty();
             $.each(map.plaques, function(index, value) {
-                item.push("<li>" + value + "</li>");
+                var item = "<li>" + value + "</li>";
+                
+                console.log(item);
+                
+                $("#plaques").append(item);
             });
 
-            $("#plaques").append(item.join(""));
         },
         drawOperators = function() {
             $.each(game.operators, function(index, value) {
