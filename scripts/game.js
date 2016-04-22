@@ -1,115 +1,130 @@
 var game = (function($) {
-	var
-		map = {
-			target: 0,
-			plaques: [],
-			currentOperation: {}
-		},
-		availablePlaques = [
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-			25, 75, 100
-		],
-		getBlankOperation = function() {
-			return {
-				leftOperand: 0,
-				operator: "",
-				rightOperand: 0
-			};
-		},
+    var
+        map = {
+            target: 0,
+            plaques: [],
+            currentOperation: {}
+        },
+        availablePlaques = [
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+            25, 75, 100
+        ],
+        getBlankOperation = function() {
+            return {
+                leftOperand: 0,
+                operator: "",
+                rightOperand: 0
+            };
+        },
 
-		addition = function(leftOperand, rightOperand) {
-			return leftOperand + rightOperand;
-		},
-		substraction = function(leftOperand, rightOperand) {
-			return leftOperand - rightOperand < 0 ? 0 : leftOperand - rightOperand;
-		},
-		multiplication = function(leftOperand, rightOperand) {
-			return leftOperand * rightOperand;
-		},
-		division = function(leftOperand, rightOperand) {
-			return leftOperand / rightOperand !== Math.floor(leftOperand / rightOperand) ?
-				0 :
-				leftOperand / rightOperand;
-		},
-		operators = {
-			"+": addition,
-			"-": substraction,
-			"*": multiplication,
-			":": division
-		},
+        addition = function(leftOperand, rightOperand) {
+            return leftOperand + rightOperand;
+        },
+        substraction = function(leftOperand, rightOperand) {
+            return leftOperand - rightOperand < 0 ? 0 : leftOperand - rightOperand;
+        },
+        multiplication = function(leftOperand, rightOperand) {
+            return leftOperand * rightOperand;
+        },
+        division = function(leftOperand, rightOperand) {
+            return leftOperand / rightOperand !== Math.floor(leftOperand / rightOperand) ?
+                0 :
+                leftOperand / rightOperand;
+        },
+        operators = {
+            "+": addition,
+            "-": substraction,
+            "*": multiplication,
+            ":": division
+        },
 
-		// initialization
-		init = function() {
-			initTarget();
-			initPlaques();
-			initOperation();
-		},
-		initTarget = function() {
-			map.target = getRandomInt(100, 999);
+        // initialization
+        init = function() {
+            initTarget();
+            initPlaques();
+            initOperation();
+        },
+        initTarget = function() {
+            map.target = getRandomInt(100, 999);
 
-			console.log("Target initialized: " + map.target);
-		},
-		initPlaques = function() {
-			var
-				temp = availablePlaques.slice(),
-				count;
+            console.log("Target initialized: " + map.target);
+        },
+        initPlaques = function() {
+            var
+                temp = availablePlaques.slice(),
+                count;
 
-			map.plaques = [];
+            map.plaques = [];
 
-			for (count = 0; count < 6; ++count) {
-				var
-					index = getRandomInt(0, temp.length - 1),
-					number = temp.splice(index, 1)[0];
+            for (count = 0; count < 6; ++count) {
+                var
+                    index = getRandomInt(0, temp.length - 1),
+                    number = temp.splice(index, 1)[0];
 
-				map.plaques.push(number);
-			}
+                map.plaques.push(number);
+            }
 
-			console.log("Plaques initialized: " + map.plaques);
-		},
-		initOperation = function() {
-			map.currentOperation = getBlankOperation();
-			console.log("Operation initialized.");
-		},
-		getRandomInt = function(minimum, maximum) {
-			return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-		}
+            console.log("Plaques initialized: " + map.plaques);
+        },
+        initOperation = function() {
+            map.currentOperation = getBlankOperation();
+            console.log("Operation initialized.");
+        },
+        getRandomInt = function(minimum, maximum) {
+            return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+        },
 
-	// Game routines
-	selectOperand = function(index) {
-			if (!isOperandSelectable()) {
-				throw Error("Illegal operation: operator is already selected.");
-			}
+        // Game routines
+        selectOperand = function(index) {
+            console.log("Select operand index: '" + index + "'")
 
-			var
-				operation = game.map.currentOperation,
-				value = game.map.plaques.slice(index, 1)[0];
+            if (!isOperandSelectable()) {
+                throw Error("Illegal operation: operator is already selected.");
+            }
+            
+            if (index >= map.plaques.length) {
+                throw Error("Index of bounds.");
+            }
 
-			if (operation.leftOperand === 0) {
-				operation.leftOperand = value;
-			} else if (operation.rightOperand === 0) {
-				operation.rightOperand = value;
-			}
-		},
-		selectOperator = function(operator) {
-			if (!isOperandSelectable()) {
-				throw Error("Illegal operation: operator is already selected.");
-			}
+            var
+                operation = map.currentOperation,
+                value = map.plaques.slice(index, 1)[0];
 
-			game.currentOperation.operator = operator;
-		},
-		isOperandSelectable = function() {
-			var operation = map.currentOperation;
+            if (operation.leftOperand === 0) {
+                operation.leftOperand = value;
+            } else if (operation.rightOperand === 0) {
+                operation.rightOperand = value;
+            }
+        },
+        selectOperator = function(operator) {
+            console.log("Operator '" + operator + "' clicked");
 
-			return operation.leftOperand === 0 || operation.operator !== "";
-		};
+            if (isOperandSelectable()) {
+                throw Error("Illegal operation: operator is already selected.");
+            }
 
-	return {
-		map: map,
-		operators: operators,
-		init: init,
-		selectOperand: selectOperand,
-		selectOperator: selectOperator,
-		isOperandSelectable: isOperandSelectable
-	};
+            map.currentOperation.operator = operator;
+        },
+        isOperandSelectable = function() {
+            var operation = map.currentOperation;
+            return operation.leftOperand === 0 || operation.operator !== "";
+        },
+        isWon = function() {
+            var
+                plaques = map.plaques,
+                target = map.target;
+
+            return plaques.indexOf(target) >= 0;
+        };
+
+    return {
+        map: map,
+        operators: operators,
+        init: init,
+        selectOperand: selectOperand,
+        selectOperator: selectOperator,
+        isOperandSelectable: isOperandSelectable,
+        isWon: isWon
+    };
 })(jQuery);
