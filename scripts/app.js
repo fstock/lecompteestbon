@@ -2,6 +2,7 @@ var app = (function($, game) {
     var
         draw = function() {
             drawTarget();
+            drawButtons();
             drawPlaques();
             drawOperators();
             drawOperation();
@@ -10,79 +11,96 @@ var app = (function($, game) {
             var
                 map = game.map,
                 $target = $("#target");
-                
-            console.log("Drawing target: " + map.target);
 
             $target.html(map.target);
         },
-        drawPlaques = function() {
-            console.log("Drawing plaques.");
+        drawButtons = function() {
+            var $cancel = $("#cancel");
 
+            $cancel.unbind();
+
+            if (game.isCancellable()) {
+                $cancel.click(cancel);
+                $cancel.removeClass("disabled");
+            } else {
+                $cancel.addClass("disabled", true);
+            }
+        },
+        cancel = function() {
+            game.cancel();
+            play();
+        },
+        drawPlaques = function() {
             var
                 map = game.map,
-                plaques = [];
+                plaques = [],
+                $plaques = $("#plaques");
 
-            $("#plaques").empty();
+            $plaques.empty();
             $.each(map.plaques, function(index, value) {
-                var $li = $("<li />").html(value);
-
-                if (game.isOperandSelectable()) {
-                    $li.click(function() {
+                var
+                    $li = $("<li />").html(value),
+                    click = function() {
                         game.selectOperand(index);
                         play();
-                    });
-                } else {
-                    $li.addClass("disabled");
-                    $li.attr("disabled", true);
+                    };
+
+                if (game.isOperandSelectable()) {
+                    $li.click(click);
                 }
 
-                $li.appendTo("#plaques");
+                $li.appendTo($plaques);
             });
 
+            if (game.isOperandSelectable()) {
+                $plaques.removeClass("disabled");
+            } else {
+                $plaques.addClass("disabled");
+            }
         },
         drawOperators = function() {
-            console.log("Drawing operators.");
+            var $operators = $("#operators");
 
-            $("#operators").empty();
+            $operators.empty();
 
             $.each(game.operators, function(index, value) {
                 var $li = $("<li />").html(index);
 
-                if (game.isOperandSelectable()) {
-                    $li.addClass("disabled");
-                    $li.attr("disabled", true);
-                } else {
+                if (game.isOperatorSelectable()) {
                     $li.click(function() {
                         game.selectOperator(index);
                         play();
                     });
                 }
 
-                $li.appendTo("#operators");
+                $li.appendTo($operators);
             });
+
+            if (game.isOperatorSelectable()) {
+                $operators.removeClass("disabled");
+            } else {
+                $operators.addClass("disabled");
+            }
         },
         drawOperation = function() {
-            var operation = game.map.currentOperation;
-            console.log("Drawing operation:");
-            console.log(operation);
-            
-            if (operation.leftOperand !== 0) {
-                $("#operation > li:nth-child(1)").html(operation.leftOperand);
-            }
+            var operation = game.map.currentOperation,
+                leftOperand = operation.leftOperand,
+                operator = operation.operator,
+                rightOperand = operation.rightOperand;
 
-            if (operation.operator !== "") {
-                $("#operation > li:nth-child(2)").html(operation.operator);
-            }
+            $("#operation > li:nth-child(1)").html(leftOperand === 0 ? "" : leftOperand);
+            $("#operation > li:nth-child(2)").html(operator);
+            $("#operation > li:nth-child(3)").html(rightOperand === 0 ? "" : rightOperand);
 
-            if (operation.rightOperand !== 0) {
-                $("#operation > li:nth-child(3)").html(operation.rightOperand);
+            if (rightOperand !== 0 && !game.isOperationValid()) {
+                $("#operation").addClass("invalid");
+            } else {
+                $("#operation").removeClass("invalid");
             }
         },
-
-        cancel = function() {},
         reset = function() {
             if (confirm("Sure????")) {
-                game.init();
+                init();
             }
         },
         play = function() {
@@ -90,14 +108,21 @@ var app = (function($, game) {
                 alert("Bravooo!!!! You won.");
             }
 
+            if (game.isOperationValid()) {
+                console.log("Operation is valid.");
+                game.calculate();
+            }
+
             draw();
+        },
+        init = function() {
+            game.init();
+            play();
         };
 
-    game.init();
-    draw();
+    init();
 
     return {
-        cancel: cancel,
         reset: reset
     };
 })(jQuery, game);

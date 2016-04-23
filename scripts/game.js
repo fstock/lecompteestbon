@@ -3,7 +3,8 @@ var game = (function($) {
         map = {
             target: 0,
             plaques: [],
-            currentOperation: {}
+            currentOperation: {},
+            history: []
         },
         availablePlaques = [
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -25,10 +26,10 @@ var game = (function($) {
             return leftOperand - rightOperand < 0 ? 0 : leftOperand - rightOperand;
         },
         multiplication = function(leftOperand, rightOperand) {
-            return leftOperand * rightOperand;
+            return leftOperand === 1 || rightOperand === 1 ? 0 : leftOperand * rightOperand;
         },
         division = function(leftOperand, rightOperand) {
-            return leftOperand / rightOperand !== Math.floor(leftOperand / rightOperand) ?
+            return rightOperand === 1 || leftOperand / rightOperand !== Math.floor(leftOperand / rightOperand) ?
                 0 :
                 leftOperand / rightOperand;
         },
@@ -38,17 +39,44 @@ var game = (function($) {
             "*": multiplication,
             ":": division
         },
+        isOperationValid = function() {
+            var
+                operation = map.currentOperation,
+                leftOperand = operation.leftOperand,
+                operator = operation.operator,
+                rightOperand = operation.rightOperand;
+
+            return leftOperand !== 0 &&
+                operator !== "" &&
+                rightOperand !== 0 &&
+                operators[operator](leftOperand, rightOperand) !== 0;
+        },
+        calculate = function() {
+            if (!isOperationValid()) {
+                throw Error("Impossible to calculate.");
+            }
+
+            var
+                operation = map.currentOperation,
+                result = operators[operation.operator](operation.leftOperand, operation.rightOperand);
+
+            map.currentOperation = getBlankOperation();
+            map.plaques.push(result);
+            map.history.push(map.plaques.slice());
+
+            console.log("History after calculate:")
+            console.log(map.history);
+        },
 
         // initialization
         init = function() {
             initTarget();
             initPlaques();
             initOperation();
+            initHistory();
         },
         initTarget = function() {
             map.target = getRandomInt(100, 999);
-
-            console.log("Target initialized: " + map.target);
         },
         initPlaques = function() {
             var
@@ -71,27 +99,32 @@ var game = (function($) {
             map.currentOperation = getBlankOperation();
             console.log("Operation initialized.");
         },
+        initHistory = function() {
+            map.history = [];
+        },
         getRandomInt = function(minimum, maximum) {
             return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
         },
 
         // Game routines
         selectOperand = function(index) {
-            console.log("Select operand index: '" + index + "'")
+            console.log("Select operand index: '" + index + "'");
 
             if (!isOperandSelectable()) {
                 throw Error("Illegal operation: operator is already selected.");
             }
-            
+
             if (index >= map.plaques.length) {
                 throw Error("Index of bounds.");
             }
 
             var
                 operation = map.currentOperation,
-                value = map.plaques.slice(index, 1)[0];
+                actualPlaques = map.plaques.slice(),
+                value = map.plaques.splice(index, 1)[0];
 
             if (operation.leftOperand === 0) {
+                map.history.push(actualPlaques);
                 operation.leftOperand = value;
             } else if (operation.rightOperand === 0) {
                 operation.rightOperand = value;
@@ -108,8 +141,28 @@ var game = (function($) {
         },
         isOperandSelectable = function() {
             var operation = map.currentOperation;
-            return operation.leftOperand === 0 || operation.operator !== "";
+            return (operation.leftOperand === 0 || operation.rightOperand === 0)  && !isOperatorSelectable();
         },
+        isOperatorSelectable = function() {
+            var operation = map.currentOperation;
+            return operation.leftOperand !== 0 && operation.operator === "" && operation.rightOperand === 0
+        },
+
+        cancel = function() {
+            console.log("Cancelling.");
+
+            var old = map.history.pop();
+
+            console.log("old: " + old);
+            console.log("new history: " + map.history);
+
+            map.plaques = old.slice();
+            map.currentOperation = getBlankOperation();
+        },
+        isCancellable = function() {
+            return map.plaques.length !== 6;
+        },
+
         isWon = function() {
             var
                 plaques = map.plaques,
@@ -125,6 +178,11 @@ var game = (function($) {
         selectOperand: selectOperand,
         selectOperator: selectOperator,
         isOperandSelectable: isOperandSelectable,
-        isWon: isWon
+        isOperatorSelectable: isOperatorSelectable,
+        cancel: cancel,
+        isCancellable: isCancellable,
+        isWon: isWon,
+        isOperationValid: isOperationValid,
+        calculate: calculate
     };
 })(jQuery);

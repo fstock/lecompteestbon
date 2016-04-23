@@ -7,11 +7,7 @@
 
     <title>Le compte est bon</title>
 
-    <style>
-        body {
-            border: 1px solid black;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/style.css" type="text/css" />
 
     <!-- Inline scripts are forbidden in Firefox OS apps (CSP restrictions),
          so we use a script file. -->
@@ -26,13 +22,13 @@
     
     <nav role="navigation">
       <ul>
-        <li><a id="cancel" onclick="app.cancel()">Cancel</a></li>
+        <li><a id="cancel">Cancel</a></li>
         <li><a id="reset" onclick="app.reset()">Reset</a></li>
       </ul>
     </nav>
     
-    <div id="playground">
-      <div id="target"></div>
+    <div id="playground">      
+      <span id="target"></span>
       
       <hr />
       

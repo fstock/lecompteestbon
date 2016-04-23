@@ -1,0 +1,37 @@
+body {
+    /*background-color: #333333;*/
+    text-align: center;
+}
+
+ul.disabled > li, #operators.disabled > li {
+    color: blue;
+}
+
+ul > li {
+    display: inline-block;
+}
+
+#target {
+    background-color: white;
+    text-align: center;
+    padding: 15px;
+    margin: 20px;
+}
+
+#plaques > li {
+    background-color: white;
+    width: 30%;
+    padding: 10px;
+}
+
+#operators > li {
+    width: 25%
+}
+
+a.disabled {
+    background-color: grey;
+}
+
+#operation.invalid > li {
+    color: red;
+}
