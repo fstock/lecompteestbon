@@ -104,13 +104,13 @@ var app = (function($, game) {
             }
         },
         play = function() {
-            if (game.isWon()) {
-                alert("Bravooo!!!! You won.");
-            }
-
             if (game.isOperationValid()) {
                 console.log("Operation is valid.");
                 game.calculate();
+            }
+                        
+            if (game.isWon()) {
+                alert("Bravooo!!!! You won.");
             }
 
             draw();
