@@ -3,8 +3,8 @@ body {
     text-align: center;
 }
 
-ul.disabled > li, #operators.disabled > li {
-    color: blue;
+ul.disabled > li, #plaques.disabled, #operators.disabled > li {
+    background-color: #999999 !important;
 }
 
 ul > li {
