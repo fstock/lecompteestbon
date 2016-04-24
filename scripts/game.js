@@ -62,7 +62,6 @@ var game = (function($) {
 
             map.currentOperation = getBlankOperation();
             map.plaques.push(result);
-            //map.history.push(map.plaques.slice());
 
             console.log("History after calculate:")
             console.log(map.history);
