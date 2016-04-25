@@ -1,10 +1,28 @@
-body {
-    /*background-color: #333333;*/
-    text-align: center;
+@import url("reset.css");
+.clear {
+    clear: both;
 }
 
-ul.disabled > li, #plaques.disabled, #operators.disabled > li {
-    background-color: #999999 !important;
+a {
+    background-color: #464545;
+    border: 15px solid #464545;
+    margin: 0 auto;
+}
+
+#plaques.disabled > li, #operators.disabled > li, a.disabled {
+    opacity: 0.6;
+}
+
+body {
+    background-color: #111111;
+    color: white;
+    margin: 0 auto;
+}
+
+#playground {
+    text-align: center;
+    font-size: 2.5em;
+    padding: 1em;
 }
 
 ul > li {
@@ -12,26 +30,46 @@ ul > li {
 }
 
 #target {
-    background-color: white;
-    text-align: center;
-    padding: 15px;
-    margin: 20px;
+    background-color: #253c54;
+    border: .35em solid #253c54;
+    margin: 0 20% 10px;
+    opacity: 0.6;
 }
 
 #plaques > li {
-    background-color: white;
-    width: 30%;
-    padding: 10px;
+    border: 10px solid #217dbb;
+    background-color: #217dbb;
+    margin: 0 5px;
 }
 
 #operators > li {
-    width: 25%
+    background-color: #008966;
+    border: 5px solid #008966;
+    margin: 0 5px;
 }
 
-a.disabled {
-    background-color: grey;
+#target,
+#plaques > li,
+#operators > li {
+    border-radius: 12px;
 }
 
 #operation.invalid > li {
     color: red;
 }
+
+/*
+
+#plaques.disabled,
+#operators.disabled > li {
+    background-color: #999999 !important;
+}
+
+#plaques > li {
+    width: 30%;
+}
+
+a.disabled {
+    background-color: grey;
+}
+*/
